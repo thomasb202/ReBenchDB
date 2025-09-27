@@ -7,7 +7,7 @@ build-and-benchmark:
   script:
     - podman build . -f Dockerfile -t rebenchdb-app
     - podman build . -f Dockerfile.rebench -t bench-rdb
-    - podman run --hostname postgres -e POSTGRES_USER=docker -e POSTGRES_PASSWORD=docker -e POSTGRES_DB=rebenchdb --cidfile=postgres.pid --publish=5432:5432 --detach postgres:16-alpine
+    - podman run --hostname postgres -e POSTGRES_USER=docker -e POSTGRES_PASSWORD=docker -e POSTGRES_DB=rebenchdb --cidfile=postgres.pid --publish=5432:5432 --detach postgres:18-alpine
     - sleep 5
     - podman run --network=host bench-rdb:latest -c --experiment="CI ID $CI_PIPELINE_ID" --branch="$CI_COMMIT_REF_NAME" rebench.conf
   after_script:
