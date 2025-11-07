@@ -58,7 +58,7 @@ export async function acceptResultData(
 ): Promise<void> {
   const start = startRequest();
 
-  const data: BenchmarkData = await ctx.request.body;
+  const data: BenchmarkData = <any>await ctx.request.body;
   ctx.type = 'text';
 
   if (DEBUG) {

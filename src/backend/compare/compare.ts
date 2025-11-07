@@ -173,7 +173,7 @@ export async function getTimelineDataAsJson(
   ctx: ParameterizedContext,
   db: Database
 ): Promise<void> {
-  const timelineRequest = <TimelineRequest>ctx.request.body;
+  const timelineRequest = <TimelineRequest>(<unknown>ctx.request.body);
   const result = await db.getTimelineData(
     ctx.params.projectName,
     timelineRequest
@@ -238,7 +238,7 @@ export async function deleteCachedReport(
     return;
   }
 
-  if (ctx.request.body.password === refreshSecret) {
+  if ((<any>ctx.request.body)?.password === refreshSecret) {
     const project = ctx.params.project;
     const base = ctx.params.baseline;
     const change = ctx.params.change;

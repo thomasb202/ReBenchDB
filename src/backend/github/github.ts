@@ -15,7 +15,7 @@ export async function handleReBenchCompletion(
   ctx: ParameterizedContext,
   db: Database
 ): Promise<void> {
-  const data: BenchmarkCompletion = await ctx.request.body;
+  const data: BenchmarkCompletion = <any>await ctx.request.body;
   ctx.type = 'text';
 
   if (!data.experimentName || !data.projectName) {
