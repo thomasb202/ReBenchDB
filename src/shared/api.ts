@@ -2,12 +2,12 @@ export interface Executor {
   name: string;
 
   /* no longer used */
-  desc: string | null;
+  desc?: string | null;
 }
 
 export interface Suite {
   name: string;
-  desc: string | null;
+  desc?: string | null;
 
   /* no longer used */
   executor: Executor;
@@ -16,7 +16,7 @@ export interface Suite {
 export interface RunDetails {
   maxInvocationTime: number;
   minIterationTime: number;
-  warmup: number | null;
+  warmup?: number | null;
 }
 
 export interface Benchmark {
@@ -35,10 +35,10 @@ export interface RunId {
   /** The current working directory. */
   location: string;
 
-  varValue: number | string | null;
-  cores: number | string | null;
-  inputSize: number | string | null;
-  extraArgs: string | null;
+  varValue?: number | string | null;
+  cores?: number | string | null;
+  inputSize?: number | string | null;
+  extraArgs?: string | null;
 }
 
 export interface Run {
