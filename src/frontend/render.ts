@@ -4,7 +4,7 @@ import { renderResultsPlots } from './plots.js';
 
 export function filterCommitMessage(msg: string): string {
   const result = msg.replace(/Signed-off-by:.*?\n/g, '')
-    .replace(/&/g, "&amp;")   // must go first!
+    .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
