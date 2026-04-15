@@ -4,11 +4,11 @@ import { renderResultsPlots } from './plots.js';
 
 export function filterCommitMessage(msg: string): string {
   const result = msg.replace(/Signed-off-by:.*?\n/g, '')
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
   return result.trim();
 }
 
