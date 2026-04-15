@@ -18,4 +18,26 @@ describe('filterCommitMessage(msg: string)', () => {
       expect(filterCommitMessage(msg)).toBe(expected);
     });
   });
+
+  describe('escaping of html characters', () => {
+    it('should escape html characters <, >', () => {
+      const msg = `This is a message with <html> characters`;
+      const expected = `This is a message with &lt;html&gt; characters`;
+      expect(filterCommitMessage(msg)).toBe(expected);
+    });
+
+    it('should escape html characters ", \' and &', () => {
+      const msg = `Message with ", ' and &`;
+      const expected = `Message with &quot;, &#39; and &amp;`;
+      expect(filterCommitMessage(msg)).toBe(expected);
+    });
+  });
+
+  describe('normal messages', () => {
+    it('should leave a normal message unchanged', () => {
+      const msg = `Normal message with no special handling needed.`;
+      const expected = `Normal message with no special handling needed.`;
+      expect(filterCommitMessage(msg)).toBe(expected);
+    });
+  });
 });
