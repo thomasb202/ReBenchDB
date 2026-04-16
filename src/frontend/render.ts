@@ -4,8 +4,9 @@ import { renderResultsPlots } from './plots.js';
 
 export function filterCommitMessage(msg: string): string {
   const result = msg
+    .normalize() // normalise Unicode first
     .replace(/Signed-off-by:.*?\n/g, '')
-    .replace(/&/g, '&amp;')
+    .replace(/&/g, '&amp;') // & must be first
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
