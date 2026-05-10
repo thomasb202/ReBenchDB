@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { robustPath } from './util.js';
-import { compile, TemplateFunction, Options } from 'ejs';
+import ejs, { TemplateFunction, Options } from 'ejs';
 
 const ejsConfig: Options = {
   openDelimiter: '{',
@@ -24,5 +24,5 @@ export function prepareTemplate(
     config.root = templateRoot;
     config.views?.push(templateRoot);
   }
-  return <TemplateFunction>compile(fileContent, config);
+  return <TemplateFunction>ejs.compile(fileContent, config);
 }

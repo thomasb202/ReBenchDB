@@ -160,7 +160,9 @@ export async function createAndInitializeDB(
   } catch (e: any) {
     if (e.code == 'ECONNREFUSED') {
       reportConnectionRefused(e);
-      throw new Error('Database connection refused');
+      throw new Error('Database connection refused', {
+        cause: e
+      });
     }
 
     throw e;

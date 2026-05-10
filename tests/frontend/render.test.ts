@@ -28,7 +28,7 @@ describe('filterCommitMessage(msg: string)', () => {
 
     it('should escape html characters ", \' and &', () => {
       const msg = `Message with ", ' and &`;
-      const expected = `Message with &quot;, &#039; and &amp;`;
+      const expected = `Message with &quot;, &#39; and &amp;`;
       expect(filterCommitMessage(msg)).toBe(expected);
     });
   });

@@ -1,4 +1,4 @@
-FROM node:24-bookworm
+FROM node:25-bookworm
 # this allows the setup to ignore all of the ubuntu OS setup
 # thats not needed for this docker image (Time Zone for example)
 ARG DEBIAN_FRONTEND=noninteractive
