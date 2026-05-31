@@ -15,7 +15,10 @@ export interface AuthState {
   username: string;
 }
 
-function redirectOrUnauthorized(ctx: ParameterizedContext, clearCookie = false): void {
+function redirectOrUnauthorized(
+  ctx: ParameterizedContext,
+  clearCookie = false
+): void {
   if (clearCookie) {
     ctx.cookies.set('rdb_session', '', { maxAge: 0, path: '/' });
   }
