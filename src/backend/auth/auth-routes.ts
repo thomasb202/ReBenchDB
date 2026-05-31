@@ -9,7 +9,7 @@ import {
   getUserByUsername
 } from './auth-db.js';
 import { prepareTemplate } from '../templates.js';
-import { rebenchVersion, robustPath } from '../util.js';
+import { BCRYPT_ROUNDS, JWT_SECRET, rebenchVersion, robustPath } from '../util.js';
 
 const loginTpl = prepareTemplate(robustPath('backend/auth/login.html'));
 
@@ -17,9 +17,6 @@ export function renderLoginPage(ctx: ParameterizedContext): void {
   ctx.body = loginTpl({ rebenchVersion });
   ctx.type = 'html';
 }
-
-const JWT_SECRET = process.env.JWT_SECRET || '';
-const BCRYPT_ROUNDS = 12;
 
 export async function register(
   ctx: ParameterizedContext,
