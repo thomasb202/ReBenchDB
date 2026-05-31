@@ -80,7 +80,6 @@ ALTER TABLE ProfileData     FORCE ROW LEVEL SECURITY;
 
 -- ============================================================
 -- 6. Helper function to read the session-local user ID.
---    Returns NULL when not set (allows bypass during migration).
 --    SECURITY DEFINER so rdb_app can call current_setting.
 -- ============================================================
 CREATE OR REPLACE FUNCTION app_current_user_id() RETURNS INTEGER
@@ -92,11 +91,8 @@ $$;
 -- ============================================================
 -- 7. RLS policies
 --
---    The `app_current_user_id() IS NULL` clause is a temporary
---    bypass so that existing routes (not yet protected by auth
---    middleware) continue to work during the migration period.
---    Remove this clause once all routes enforce authentication.
---
+--    All user-facing routes are protected by requireAuth which
+--    sets app.current_user_id via withUserContext.
 --    Machine-to-machine endpoints (PUT /rebenchdb/results) run
 --    as the pool superuser without SET ROLE, so they bypass
 --    RLS entirely and are unaffected by these policies.
@@ -105,8 +101,7 @@ $$;
 -- Project: direct membership check
 CREATE POLICY project_access ON Project
   FOR ALL USING (
-    app_current_user_id() IS NULL
-    OR EXISTS (
+    EXISTS (
       SELECT 1 FROM ProjectMembership pm
       WHERE pm.projectId = Project.id
         AND pm.userId = app_current_user_id()
@@ -116,8 +111,7 @@ CREATE POLICY project_access ON Project
 -- Experiment: linked to Project via projectId
 CREATE POLICY experiment_access ON Experiment
   FOR ALL USING (
-    app_current_user_id() IS NULL
-    OR EXISTS (
+    EXISTS (
       SELECT 1 FROM ProjectMembership pm
       WHERE pm.projectId = Experiment.projectId
         AND pm.userId = app_current_user_id()
@@ -127,8 +121,7 @@ CREATE POLICY experiment_access ON Experiment
 -- Trial: Experiment.projectId
 CREATE POLICY trial_access ON Trial
   FOR ALL USING (
-    app_current_user_id() IS NULL
-    OR EXISTS (
+    EXISTS (
       SELECT 1 FROM ProjectMembership pm
         JOIN Experiment e ON e.id = Trial.expId
       WHERE pm.projectId = e.projectId
@@ -140,8 +133,7 @@ CREATE POLICY trial_access ON Trial
 --      Trial references it through Measurement.
 CREATE POLICY run_access ON Run
   FOR ALL USING (
-    app_current_user_id() IS NULL
-    OR EXISTS (
+    EXISTS (
       SELECT 1 FROM Measurement m
         JOIN Trial t ON t.id = m.trialId
         JOIN Experiment e ON e.id = t.expId
@@ -154,8 +146,7 @@ CREATE POLICY run_access ON Run
 -- Measurement: Trial -> Experiment -> Project
 CREATE POLICY measurement_access ON Measurement
   FOR ALL USING (
-    app_current_user_id() IS NULL
-    OR EXISTS (
+    EXISTS (
       SELECT 1 FROM ProjectMembership pm
         JOIN Trial t ON t.id = Measurement.trialId
         JOIN Experiment e ON e.id = t.expId
@@ -167,8 +158,7 @@ CREATE POLICY measurement_access ON Measurement
 -- Timeline: same join path as Measurement
 CREATE POLICY timeline_access ON Timeline
   FOR ALL USING (
-    app_current_user_id() IS NULL
-    OR EXISTS (
+    EXISTS (
       SELECT 1 FROM ProjectMembership pm
         JOIN Trial t ON t.id = Timeline.trialId
         JOIN Experiment e ON e.id = t.expId
@@ -181,8 +171,7 @@ CREATE POLICY timeline_access ON Timeline
 --         Trial references it.
 CREATE POLICY source_access ON Source
   FOR ALL USING (
-    app_current_user_id() IS NULL
-    OR EXISTS (
+    EXISTS (
       SELECT 1 FROM Trial t
         JOIN Experiment e ON e.id = t.expId
         JOIN ProjectMembership pm ON pm.projectId = e.projectId
@@ -194,8 +183,7 @@ CREATE POLICY source_access ON Source
 -- ProfileData: same join path as Measurement
 CREATE POLICY profiledata_access ON ProfileData
   FOR ALL USING (
-    app_current_user_id() IS NULL
-    OR EXISTS (
+    EXISTS (
       SELECT 1 FROM ProjectMembership pm
         JOIN Trial t ON t.id = ProfileData.trialId
         JOIN Experiment e ON e.id = t.expId
@@ -205,8 +193,9 @@ CREATE POLICY profiledata_access ON ProfileData
   );
 
 -- ============================================================
--- 8. Schema version bump
+-- 8. Schema version bump (consolidates migrations 14 and 15)
 -- ============================================================
 INSERT INTO SchemaVersion (version, updateDate) VALUES (14, now());
+INSERT INTO SchemaVersion (version, updateDate) VALUES (15, now());
 
 COMMIT;
