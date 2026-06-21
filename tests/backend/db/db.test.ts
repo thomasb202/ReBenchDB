@@ -285,6 +285,10 @@ describe('createValueBatchForInsertion()', () => {
     ): Promise<T> {
       return fn();
     }
+
+    public async withSystemContext<T>(fn: () => Promise<T>): Promise<T> {
+      return fn();
+    }
   }
 
   const run1 = { id: 1 } as Run;

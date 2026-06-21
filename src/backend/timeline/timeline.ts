@@ -33,9 +33,7 @@ export async function getTimelineAsJson(
     return;
   }
 
-  ctx.body = await db.withUserContext(ctx.state.userId, () =>
-    db.getTimelineForRun(projectId, runId)
-  );
+  ctx.body = await db.getTimelineForRun(projectId, runId);
   if (ctx.body === null) {
     ctx.status = 500;
   }
@@ -48,9 +46,7 @@ export async function redirectToNewTimelineUrl(
   ctx: ParameterizedContext,
   db: Database
 ): Promise<void> {
-  const project = await db.withUserContext(ctx.state.userId, () =>
-    db.getProject(Number(ctx.params.projectId))
-  );
+  const project = await db.getProject(Number(ctx.params.projectId));
   if (project) {
     ctx.redirect(`/${project.slug}/timeline`);
   } else {
@@ -62,17 +58,10 @@ export async function renderTimeline(
   ctx: ParameterizedContext,
   db: Database
 ): Promise<void> {
-  const [project, benchmarks] = await db.withUserContext(
-    ctx.state.userId,
-    async () => {
-      const project = await db.getProjectBySlug(ctx.params.projectSlug);
-      if (!project) return [null, null] as const;
-      return [
-        project,
-        await getLatestBenchmarksForTimelineView(project.id, db)
-      ] as const;
-    }
-  );
+  const project = await db.getProjectBySlug(ctx.params.projectSlug);
+  const benchmarks = project
+    ? await getLatestBenchmarksForTimelineView(project.id, db)
+    : null;
 
   if (project) {
     ctx.body = timelineTpl({ rebenchVersion, project, benchmarks });
